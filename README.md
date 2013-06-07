@@ -1,7 +1,7 @@
 sasswatch
 =========
 
-is a simple [Gentoo Linux](http://www.gentoo.org) service / initscript for automatic background compiling of [Sass](http://sass-lang.com) files. Once installed and started on a Gentoo Linux system, *sasswatch* monitors the files and folders you configured, tracks changes in Sass files and compiles them to CSS in real-time.
+is a simple [Gentoo Linux](http://www.gentoo.org) service / initscript for automatic background compiling of [Sass](http://sass-lang.com) files. Once installed and started on a Gentoo Linux system, *sasswatch* monitors the project specific files and folders you configured, tracks changes in Sass files and silently compiles them to CSS in real-time.
 
 
 Installation
