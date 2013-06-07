@@ -1,0 +1,12 @@
+# sasswatch - a Gentoo Linux service / initscript for automatic background compiling of Sass resources
+# Copyright © 2013 tollwerk® GmbH / Joschi Kuphal
+# Licensed unter a Creative Commons Attribution 3.0 Unported License (http://creativecommons.org/licenses/by/3.0/)
+
+# The commented variables in this file are the defaults that are used
+# in the init-script.  You don't need to uncomment them except to
+# customize them to different values.
+
+# Default options for sasswatch
+# SASSWATCH_COMPASS="1";
+# SASSWATCH_STYLE="expanded";
+# SASSWATCH_REQUIRE="";

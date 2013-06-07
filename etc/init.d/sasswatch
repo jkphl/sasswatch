@@ -1,0 +1,84 @@
+#!/sbin/runscript
+# sasswatch - a Gentoo Linux service / initscript for automatic background compiling of Sass resources
+# Copyright © 2013 tollwerk® GmbH / Joschi Kuphal
+# Licensed unter a Creative Commons Attribution 3.0 Unported License (http://creativecommons.org/licenses/by/3.0/)
+
+depend() {
+        need localmount
+        after bootmisc
+        use logger
+}
+
+start() {
+        ebegin "Starting sasswatch"
+
+        function trim {
+                echo $1 | sed 's/^ *//g' | sed 's/ *$//g';
+        }
+
+        function watch {
+                if [[ "$1" =~ .*:.* ]]; then
+                        sass="`echo \"$1\" | cut -d: -f1`";
+                        sass=$(trim "$sass");
+                        css="`echo \"$1\" | cut -d: -f2`";
+                        css=$(trim "$css");
+                        if [ "$sass" != "" -a "$css" != "" -a \( \( -d "$sass" -a -d "$css" \) -o \( -f "$sass" -a \( -f "$css" -o ! -e "$css" \) \) \) ]; then
+                                echo " $sass:$css";
+                        fi;
+                fi;
+        }
+
+        sasscmd="`which sass`";
+        sassopts="--unix-newline --style ${SASSWATCH_STYLE:-expanded}";
+        sassdefaultstyle="${SASSWATCH_STYLE:-expanded}";
+        sassdefaultcompass="${SASSWATCH_COMPASS:-1}";
+        sassdefaultrequire="${SASSWATCH_REQUIRE}";
+        rm -f /var/run/sasswatch.cmd;
+        projects=0;
+
+        # Determine all files and directories that have to be observed
+        for watchconfig in `find /etc/sasswatch.d -maxdepth 1 -type f`; do
+                style="$sassdefaultstyle";
+                compass="$sassdefaultcompass";
+                require="$sassdefaultrequire";
+                watch="";
+                source "$watchconfig";
+                cmd="$sasscmd --unix-newline --style ${style}";
+
+                # Determine if the compass framework shoud be loaded
+                if [ "${compass}" = "1" ]; then
+                        cmd="${cmd} --compass";
+                fi;
+
+                # Determine if additional libraries should be required
+                if [ "$require" != "" ]; then
+                        for req in $require; do
+                                cmd="${cmd} --require ${req}";
+                        done;
+                fi;
+
+                watches="";
+                for w in $watch; do
+                        watches="${watches} $w";
+                done;
+
+                if [ "$watches" != "" ]; then
+                        echo "$cmd --watch $watches" >> /var/run/sasswatch.cmd;
+                        projects=$((projects + 1));
+                fi;
+        done;
+
+        start-stop-daemon --start --background --make-pidfile \
+                --pidfile /var/run/sasswatch.pid --exec parallel \
+                --stdout /var/log/sasswatch.log -- \
+                -j $projects -a /var/run/sasswatch.cmd
+        eend $?
+}
+
+stop() {
+        ebegin "Stopping sasswatch"
+        pid="`cat /var/run/sasswatch.pid`";
+        sh -c "kill -TERM -${pid}";
+        start-stop-daemon --stop --quiet --pidfile /var/run/sasswatch.pid
+        eend $?
+}

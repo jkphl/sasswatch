@@ -1,0 +1,8 @@
+# sasswatch - a Gentoo Linux service / initscript for automatic background compiling of Sass resources
+# Copyright © 2013 tollwerk® GmbH / Joschi Kuphal
+# Licensed unter a Creative Commons Attribution 3.0 Unported License (http://creativecommons.org/licenses/by/3.0/)
+
+compass="1";
+style="compact";
+require="animation";
+watch="/path/to/sass/dir1:/path/to/css/dir1";
