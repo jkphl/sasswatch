@@ -82,25 +82,48 @@ To use *sasswatch* on your system, you must have **Ruby**, **sass**, **GNU paral
 
 First off, get Ruby and put this into your `/etc/portage/make.conf` (respectively `/etc/make.conf` on older systems):
 
-	RUBY_TARGETS="ruby19"
+```bash
+RUBY_TARGETS="ruby19"
+```
 	
 Next, emerge Ruby, sass and GNU parallel. On some systems some of the required packages might need the experimental keyword, so you might have to put something like this into your `/etc/portage/package.keywords`:
 
-	dev-ruby/rb-inotify ~amd64
-	dev-ruby/listen ~amd64
-	dev-ruby/sass ~amd64
+```bash
+dev-ruby/rb-inotify ~amd64
+dev-ruby/listen ~amd64
+dev-ruby/sass ~amd64
+```
 
 Then:
 
-	emerge ruby sass sys-process/parallel
+```bash
+emerge ruby sass sys-process/parallel
+```
 
 There's no [compass](http://compass-style.org) ebuild on Gentoo, so you will have to install it as Ruby Gem:
 
-	gem install compass
+```bash
+gem install compass
+```
 	
 If you intend to use additional, external libraries, you will be on your own to install them appropriately.
 
+### Running under Hardened Gentoo
+
+I had a hard time getting `sass --watch` to run properly under Hardened Gentoo. At the time of this writing (January 31st, 2014), instead of using the gentoo ebuilds, this is the installation process I employed: 
+
+```bash
+gem install sass
+gem install compass
+gem install --version '~> 0.9' rb-inotify
+
+paxctl -m /usr/bin/ruby
+```
+
+In particular the last line is somewhat of a last ressort, but I found no other way to get it running. As there's no ebuild involved in this setup, you don't need to set any entries in `/etc/portage/package.keywords`, obviously.
 
 Legal
 -----
-*sasswatch* Copyright © 2013 tollwerk® GmbH / Joschi Kuphal, licensed under a [Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/).
+Copyright © 2014 Joschi Kuphal <joschi@kuphal.net> / [@jkphl](https://twitter.com/jkphl)
+
+As of version 0.1.0, *sasswatch* is licensed under the terms of the [MIT license](LICENSE.txt). Before that, a [Creative Commons Attribution 3.0 Unported License](http://creativecommons.org/licenses/by/3.0/) applied.
